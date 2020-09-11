@@ -1,24 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
+import React,{useState, useEffect} from 'react';
+import  CharacterGrid from './components/characters/CharacterGrid'
+import axios from 'axios'
 import './App.css';
+import Header from './components/ui/Header'
+import Seacrh from './components/ui/Seacrh';
 
-function App() {
+
+const App=()=> {
+
+  const [items, setItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true)
+  const [query, setQuery] = useState('')
+
+useEffect(() => {
+  axios.get(`https://www.breakingbadapi.com/api/characters?name=${query}`)
+  .then(result=>{
+      console.log(`-----------then block----------`)
+      console.log(result.data)
+      setItems(result.data)
+      setIsLoading(false)
+  }
+  )
+  .catch(err=>{
+      console.log('--------catch block---------')
+      setItems([])
+  })
+
+
+}, [query])
+
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+     <Header/>
+     <Seacrh getQuery={(q)=> setQuery(q)} />
+     <CharacterGrid isLoading={isLoading} items={items} />
     </div>
   );
 }
